@@ -21,6 +21,10 @@ Toutes les ressources devront être nommées avec le préfixe `CFT-`.
 3. Un fichier de configuration AWS avec des credentials valides.
 4. Un accès au compte AWS avec les permissions nécessaires pour créer des ressources.
 
+## Schéma attendu
+
+![Schéma attendu](Images/Infrastructure.png)
+
 ---
 
 ## Étapes de mise en place avec Terraform
@@ -51,7 +55,7 @@ resource "aws_subnet" "CFT_public_subnet" {
   vpc_id                  = aws_vpc.CFT_vpc.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a" # Changez selon votre région
+  availability_zone       = "eu-wests-3" # Changez selon votre région
   tags = {
     Name = "CFT-Public-Subnet"
   }
@@ -62,7 +66,7 @@ resource "aws_subnet" "CFT_public_subnet" {
 resource "aws_subnet" "CFT_private_subnet" {
   vpc_id            = aws_vpc.CFT_vpc.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1a" # Changez selon votre région
+  availability_zone = "eu-wests-3" # Changez selon votre région
   tags = {
     Name = "CFT-Private-Subnet"
   }
