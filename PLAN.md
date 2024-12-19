@@ -2,7 +2,7 @@
 
 Ce projet termine le module **Infrastructure Cloud** du semestre 1.
 
-Il permettra au membre du groupe en monter en compétences sur 4 parties.
+Il permettra au membre du groupe de monter en compétences sur 4 outils.
 
 **1.Premiere compétence visée : GitHub**
 
@@ -19,5 +19,5 @@ Nous pluggerons OnlyOffice, espace de travail collaboratif en mode synchrone.
 
 **4.Quatrième compétence visée : Sécurisation accès Cloud**
 
-Apporter de la sécurité en mettant en place un bastion autorisant uniqmement la connexion à CozyCloud via un VPN.
+Apporter de la sécurité en mettant en place un bastion autorisant uniquement la connexion à CozyCloud via un VPN.
 
