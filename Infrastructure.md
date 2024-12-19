@@ -7,10 +7,11 @@ Ce projet consiste à créer une infrastructure AWS avec les caractéristiques s
 1. Un Virtual Private Cloud (VPC).
 2. Un subnet public et un subnet privé.
 3. Une instance EC2 dans le subnet public (bastion).
-4. Une instance EC2 dans le subnet privé.
+4. Une instance EC2 dans le subnet privé avec CozyCloud installé.
 5. L'accès à l'instance EC2 privée sera uniquement possible via l'instance bastion dans le subnet public.
+6. Création d'AMIs pour le bastion et pour l'instance avec CozyCloud, utilisées pour un déploiement automatisé via Terraform.
 
-Toutes les ressources devront être nommées avec le préfixe `CFT-`.
+Toutes les ressources devront être nommées avec le préfixe `CFT-` et seront déployées dans la région `us-west-3`.
 
 ---
 
@@ -20,10 +21,7 @@ Toutes les ressources devront être nommées avec le préfixe `CFT-`.
 2. **Terraform** installé.
 3. Un fichier de configuration AWS avec des credentials valides.
 4. Un accès au compte AWS avec les permissions nécessaires pour créer des ressources.
-
-## Schéma attendu
-
-![Schéma attendu](Images/Infrastructure.png)
+5. Une clé SSH pour se connecter aux instances EC2.
 
 ---
 
@@ -39,7 +37,7 @@ terraform init
 Ajoutez une ressource VPC dans votre fichier Terraform :
 ```hcl
 resource "aws_vpc" "CFT_vpc" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
@@ -55,7 +53,7 @@ resource "aws_subnet" "CFT_public_subnet" {
   vpc_id                  = aws_vpc.CFT_vpc.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "eu-wests-3" # Changez selon votre région
+  availability_zone       = "us-west-3a"
   tags = {
     Name = "CFT-Public-Subnet"
   }
@@ -66,7 +64,7 @@ resource "aws_subnet" "CFT_public_subnet" {
 resource "aws_subnet" "CFT_private_subnet" {
   vpc_id            = aws_vpc.CFT_vpc.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = "eu-wests-3" # Changez selon votre région
+  availability_zone = "us-west-3a"
   tags = {
     Name = "CFT-Private-Subnet"
   }
@@ -108,19 +106,19 @@ resource "aws_route_table_association" "CFT_public_subnet_association" {
 #### Instance bastion (subnet public)
 ```hcl
 resource "aws_instance" "CFT_bastion" {
-  ami           = "ami-12345678" # Remplacez par une AMI valide
+  ami           = "ami-08fb0cc3789468f4d" # Remplacez par une AMI valide
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.CFT_public_subnet.id
+  key_name      = "your-key-name" # Remplacez par votre clé SSH
   tags = {
     Name = "CFT-Bastion"
   }
 }
 ```
-
 #### Instance privée (subnet privé)
 ```hcl
 resource "aws_instance" "CFT_private_instance" {
-  ami           = "ami-12345678" # Remplacez par une AMI valide
+  ami           = "ami-87654321" # Remplacez par une AMI valide
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.CFT_private_subnet.id
   tags = {
@@ -129,64 +127,30 @@ resource "aws_instance" "CFT_private_instance" {
 }
 ```
 
----
+### 6. Connexion au bastion et transformation en machine de rebond
+1. Connectez-vous à l'instance bastion :
+   ```bash
+   ssh -i your-key.pem ec2-user@<public-ip-bastion>
+   ```
+2. Configurez l'accès SSH pour l'instance privée via le bastion :
+   ```bash
+   ssh -i your-key.pem -J ec2-user@<public-ip-bastion> ec2-user@<private-ip-instance>
+   ```
 
-## Configuration du bastion
-Assurez-vous que le bastion dispose d'une clé SSH permettant de se connecter à l'instance privée. Ajoutez également une règle de sécurité pour autoriser uniquement l'accès SSH (port 22) depuis des adresses IP spécifiques.
-
-Exemple de groupe de sécurité pour le bastion :
+### 7. Création des AMIs
+#### AMI pour le bastion
 ```hcl
-resource "aws_security_group" "CFT_bastion_sg" {
-  vpc_id = aws_vpc.CFT_vpc.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Limitez cette règle pour des raisons de sécurité
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "CFT-Bastion-SG"
-  }
+resource "aws_ami_from_instance" "CFT_bastion_ami" {
+  source_instance_id = aws_instance.CFT_bastion.id
+  name               = "CFT-Bastion-AMI"
 }
 ```
-
----
-
-## Commandes Terraform
-1. **Initialisation du projet** :
-   ```bash
-   terraform init
-   ```
-
-2. **Vérification du plan** :
-   ```bash
-   terraform plan
-   ```
-
-3. **Application des configurations** :
-   ```bash
-   terraform apply
-   ```
-
-4. **Nettoyage des ressources** (si nécessaire) :
-   ```bash
-   terraform destroy
-   ```
-
----
-
-## Notes de sécurité
-- Limitez l'accès SSH uniquement à des adresses IP de confiance.
-- Utilisez des clés SSH sécurisées.
-- Assurez-vous que les instances ont des rôles IAM configurés si elles doivent interagir avec d'autres services AWS.
+#### AMI pour l'instance CozyCloud
+Une fois que l'équipe a configuré CozyCloud sur l'instance privée, utilisez une ressource similaire :
+```hcl
+resource "aws_ami_from_instance" "CFT_cozycloud_ami" {
+  source_instance_id = aws_instance.CFT_private_instance.id
+  name               = "CFT-CozyCloud-AMI"
+}
 
 ---

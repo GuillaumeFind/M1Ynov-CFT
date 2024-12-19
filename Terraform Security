@@ -1,0 +1,5 @@
+## Notes de sécurité
+- Limitez l'accès SSH uniquement à des adresses IP de confiance.
+- Utilisez des clés SSH sécurisées.
+- Assurez-vous que les instances ont des rôles IAM configurés si elles doivent interagir avec d'autres services AWS.
+- Vérifiez que les AMIs sont stockées dans un compte AWS sécurisé.

@@ -1,0 +1,46 @@
+# Présentation de Visual Studio Code (VS Code)
+
+## **Qu'est-ce que VS Code ?**
+Visual Studio Code (VS Code) est un éditeur de code source moderne, léger et gratuit développé par Microsoft. Il est très apprécié des développeurs pour ses nombreuses fonctionnalités et sa grande flexibilité.
+
+## **Caractéristiques principales**
+- **Multiplateforme** : Compatible avec Windows, macOS et Linux.
+- **Support de nombreux langages** : Grâce aux extensions, vous pouvez coder en Python, JavaScript, C++, Java, etc.
+- **Personnalisable** : Ajoutez des fonctionnalités via le Marketplace (linting, thèmes, intégration Git, etc.).
+- **Terminal intégré** : Exécutez des commandes sans quitter l’éditeur.
+- **Outils Git intégrés** : Synchronisez vos projets avec des dépôts distants comme GitHub.
+- **Débogage intégré** : Détectez et corrigez les bugs directement depuis l’éditeur.
+
+---
+
+# Présentation de GitHub
+
+## **Qu'est-ce que GitHub ?**
+GitHub est une plateforme de gestion de code source et de collaboration basée sur Git. Elle est utilisée par des millions de développeurs pour stocker, partager et travailler sur du code.
+
+## **Caractéristiques principales**
+- **Hébergement de dépôts Git** : Stockez et gérez votre code source.
+- **Collaboration** : Travaillez avec d'autres développeurs via des pull requests, des issues et des discussions.
+- **CI/CD** : Intégrez des workflows pour automatiser le déploiement et les tests.
+- **Sécurité** : Scannez votre code pour détecter les vulnérabilités.
+- **Open Source** : Découvrez et contribuez à des milliers de projets open source.
+
+---
+
+# Tuto : Comment pousser son code sur GitHub
+
+## **1. Prérequis**
+- Avoir Visual Studio Code installé.
+- Avoir un compte GitHub ([Créer un compte ici](https://github.com)).
+- Installer Git sur votre machine ([Télécharger Git ici](https://git-scm.com)).
+
+## **2. Étapes**
+### **Étape 1 : Initialiser votre projet Git**
+1. Ouvrez votre projet dans VS Code.
+2. Ouvrez le terminal intégré :  
+   `Ctrl + ` (Windows/Linux) ou `Cmd + ` (Mac).
+3. Exécutez les commandes suivantes :  
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"

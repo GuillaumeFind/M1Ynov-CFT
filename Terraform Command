@@ -1,0 +1,22 @@
+---
+
+## Commandes Terraform
+1. **Initialisation du projet** :
+  
+   terraform init
+   ```
+
+2. **Vérification du plan** :
+   terraform plan
+   ```
+
+3. **Application des configurations** :
+
+   terraform apply
+   ```
+
+4. **Nettoyage des ressources** (si nécessaire) :
+   terraform destroy
+   ```
+
+---
