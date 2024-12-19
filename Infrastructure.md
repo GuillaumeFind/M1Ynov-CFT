@@ -29,7 +29,7 @@ Toutes les ressources devront être nommées avec le préfixe `CFT-` et seront d
 
 ### 1. Initialisation de Terraform
 Créez un fichier `main.tf` pour définir les ressources. Initialisez le projet avec :
-```bash
+
 terraform init
 ```
 
@@ -129,11 +129,11 @@ resource "aws_instance" "CFT_private_instance" {
 
 ### 6. Connexion au bastion et transformation en machine de rebond
 1. Connectez-vous à l'instance bastion :
-   ```bash
+   
    ssh -i your-key.pem ec2-user@<public-ip-bastion>
    ```
 2. Configurez l'accès SSH pour l'instance privée via le bastion :
-   ```bash
+   
    ssh -i your-key.pem -J ec2-user@<public-ip-bastion> ec2-user@<private-ip-instance>
    ```
 
