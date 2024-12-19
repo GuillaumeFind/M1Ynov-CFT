@@ -21,6 +21,10 @@ Toutes les ressources devront être nommées avec le préfixe `CFT-`.
 3. Un fichier de configuration AWS avec des credentials valides.
 4. Un accès au compte AWS avec les permissions nécessaires pour créer des ressources.
 
+## Schéma attendu
+
+![Schéma attendu](Images/Infrastructure.png)
+
 ---
 
 ## Étapes de mise en place avec Terraform
