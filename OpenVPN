@@ -1,0 +1,26 @@
+https://www.it-connect.fr/debian-11-et-openvpn-comment-creer-son-propre-serveur-vpn/
+
+sudo apt-get update
+sudo apt-get install curl
+
+curl -O https://raw.githubusercontent.com/Angristan/openvpn-install/master/openvpn-install.sh
+
+chmod +x openvpn-install.sh
+
+sudo ./openvpn-install.sh
+
+DNS: Current system resolv
+
+Default 
+
+
+A. Sur Windows
+
+Sur Windows, il faudra installer OpenVPN GUI ou OpenVPN Connect. Personnellement, j'utilise OpenVPN GUI donc je dois copier-coller le fichier OVPN dans le répertoire suivant :
+
+
+    Le certificat du client dans /etc/openvpn/easy-rsa/pki/issued/<nom du client>.crt
+    La clé privée du client dans /etc/openvpn/easy-rsa/pki/private/<nom du client>.key
+
+
+C:\Program Files\OpenVPN\config
