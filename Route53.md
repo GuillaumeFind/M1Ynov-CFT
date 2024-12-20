@@ -51,7 +51,7 @@ On va devoir créer deux enregistrements :
 
 Une fois fini, on retrouve nos enregistrements.
 
-![Record](/Images/endrecord)
+![Record](/Images/endrecord.png)
 
 
 
