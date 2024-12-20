@@ -1,7 +1,7 @@
 ***
 # Route 53
 
-Route 53 est un servise de noms de domaine (DNS) hautement dsisponible et évolutif proposé par AWS. Il permet de résoudre les noms de domaine en adresses IP et de diriger le trafic internet vers les applications et les services hébergés sur AWS ou sur site.
+Route 53 est un service de noms de domaine (DNS) hautement disponible et évolutif proposé par AWS. Il permet de résoudre les noms de domaine en adresses IP et de diriger le trafic internet vers les applications et les services hébergés sur AWS ou sur site.
 
 **Caractéristique clés**
 
@@ -33,7 +33,7 @@ Amazon **Route 53** est un service de système de noms de domaine (DNS) hautemen
 
 On se dirige sur la page d'accueil, dans la zone de recherche, on tape **Route53**. On arrive sur le Dashboard du service.
 
-![HomePage](/images/homepage.png)
+![HomePage](/Images/homepage.png)
 
 On clique sur **Hosted zones**
 
