@@ -31,14 +31,27 @@ Amazon **Route 53** est un service de système de noms de domaine (DNS) hautemen
 
 ## Configuration Route 53
 
-On se dirige sur la page d'accueil, dans la zone de recherche, on tape **Route53**.
-![HomePage]()
+On se dirige sur la page d'accueil, dans la zone de recherche, on tape **Route53**. On arrive sur le Dashboard du service.
+
+![HomePage](/images/homepage.png)
+
+On clique sur **Hosted zones**
+
+![HostedZone](/Images/clickhosted.png)
 
 On clique sur la zone d'hébergement déja crée par l'autre promo, **tycm2-infra.fr**.
+
+![HostedZones](/Images/selectdns.png)
 
 On va devoir créer deux enregistrements : 
 
 - une enregistrement qui va lier notre serveur à un nom de domaine, nous avons choisi le nom de domaine : [cft-czycloud.tycm2-infra.fr](https://cft-cozycloud.tycm2-infra.fr/)
 
 - un alias de notre nom de domaine comme suit : ***.cft-cozycloud.tycm2-infra.fr**
+
+Une fois fini, on retrouve nos enregistrements.
+
+![Record](/Images/endrecord)
+
+
 
