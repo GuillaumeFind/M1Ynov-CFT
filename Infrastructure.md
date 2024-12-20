@@ -29,13 +29,13 @@ Toutes les ressources devront être nommées avec le préfixe `CFT-` et seront d
 
 ### 1. Initialisation de Terraform
 Créez un fichier `main.tf` pour définir les ressources. Initialisez le projet avec :
-```bash
+
 terraform init
 ```
 
 ### 2. Création du VPC
 Ajoutez une ressource VPC dans votre fichier Terraform :
-```hcl
+
 resource "aws_vpc" "CFT_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -48,7 +48,7 @@ resource "aws_vpc" "CFT_vpc" {
 
 ### 3. Création des subnets
 #### Subnet public
-```hcl
+
 resource "aws_subnet" "CFT_public_subnet" {
   vpc_id                  = aws_vpc.CFT_vpc.id
   cidr_block              = "10.0.1.0/24"
@@ -60,7 +60,7 @@ resource "aws_subnet" "CFT_public_subnet" {
 }
 ```
 #### Subnet privé
-```hcl
+
 resource "aws_subnet" "CFT_private_subnet" {
   vpc_id            = aws_vpc.CFT_vpc.id
   cidr_block        = "10.0.2.0/24"
@@ -73,7 +73,7 @@ resource "aws_subnet" "CFT_private_subnet" {
 
 ### 4. Création de la gateway Internet et table de routage pour le subnet public
 #### Gateway Internet
-```hcl
+
 resource "aws_internet_gateway" "CFT_igw" {
   vpc_id = aws_vpc.CFT_vpc.id
   tags = {
@@ -82,7 +82,7 @@ resource "aws_internet_gateway" "CFT_igw" {
 }
 ```
 #### Table de routage
-```hcl
+
 resource "aws_route_table" "CFT_public_route_table" {
   vpc_id = aws_vpc.CFT_vpc.id
   tags = {
@@ -104,19 +104,19 @@ resource "aws_route_table_association" "CFT_public_subnet_association" {
 
 ### 5. Création des instances EC2
 #### Instance bastion (subnet public)
-```hcl
+
 resource "aws_instance" "CFT_bastion" {
   ami           = "ami-08fb0cc3789468f4d" # Remplacez par une AMI valide
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.CFT_public_subnet.id
-  key_name      = "your-key-name" # Remplacez par votre clé SSH
+  key_name      = "CTF-KeyPair" # Remplacez par votre clé SSH
   tags = {
     Name = "CFT-Bastion"
   }
 }
 ```
 #### Instance privée (subnet privé)
-```hcl
+
 resource "aws_instance" "CFT_private_instance" {
   ami           = "ami-87654321" # Remplacez par une AMI valide
   instance_type = "t2.micro"
@@ -129,25 +129,36 @@ resource "aws_instance" "CFT_private_instance" {
 
 ### 6. Connexion au bastion et transformation en machine de rebond
 1. Connectez-vous à l'instance bastion :
-   ```bash
-   ssh -i your-key.pem ec2-user@<public-ip-bastion>
+   
+   ssh -i CTF-KeyPair ec2-user@<public-ip-bastion>
    ```
 2. Configurez l'accès SSH pour l'instance privée via le bastion :
-   ```bash
-   ssh -i your-key.pem -J ec2-user@<public-ip-bastion> ec2-user@<private-ip-instance>
+   
+   ssh -i CTF-KeyPair -J ec2-user@<public-ip-bastion> ec2-user@<private-ip-instance>
    ```
+2. Configurez .ssh/ :
+   
+   Host Bastion
+    HostName 35.181.170.214
+    User ec2-user
+    IdentityFile ~/.ssh/CTF-KeyPair.pem
+  Host CozyCloud
+    HostName 10.0.13.61
+    User admin
+    IdentityFile ~/ssh/CTF-Keypair.pem
+
 
 ### 7. Création des AMIs
 #### AMI pour le bastion
-```hcl
-resource "aws_ami_from_instance" "CFT_bastion_ami" {
+
+resource "aws_ami_from_instance" "ami-08fb0cc3789468f4d" {
   source_instance_id = aws_instance.CFT_bastion.id
-  name               = "CFT-Bastion-AMI"
+  name               = "CFT_AMI_Bastion"
 }
 ```
 #### AMI pour l'instance CozyCloud
 Une fois que l'équipe a configuré CozyCloud sur l'instance privée, utilisez une ressource similaire :
-```hcl
+
 resource "aws_ami_from_instance" "CFT_cozycloud_ami" {
   source_instance_id = aws_instance.CFT_private_instance.id
   name               = "CFT-CozyCloud-AMI"
