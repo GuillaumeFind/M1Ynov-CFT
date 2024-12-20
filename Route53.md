@@ -32,6 +32,7 @@ Amazon **Route 53** est un service de système de noms de domaine (DNS) hautemen
 ## Configuration Route 53
 
 On se dirige sur la page d'accueil, dans la zone de recherche, on tape **Route53**.
+![HomePage]()
 
 On clique sur la zone d'hébergement déja crée par l'autre promo, **tycm2-infra.fr**.
 
