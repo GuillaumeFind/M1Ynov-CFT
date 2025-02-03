@@ -71,6 +71,9 @@ key_name      = "CFT-KeyPair"
 bastion_ami   = "ami-08fb0cc3789468f4d"  # Ubuntu 22.04 LTS
 cozycloud_ami = "ami-xxxxx"               # AMI personnalisée avec CozyCloud
 public_vpc_cidr = 10.0.0.0/16
+private_vpc_cid = 10.1.0.0/16
+public_subnet_cidr = 10.0.1.0/24
+private_subnet_cidr = 10.1.1.0/24
 
 ```
 
@@ -91,13 +94,12 @@ Créez ou modifiez `~/.ssh/config`:
 ```plaintext
 Host CFT-Bastion
     HostName [BASTION_PUBLIC_IP]
-    User ubuntu
+    User admin
     IdentityFile ~/.ssh/CFT-KeyPair.pem
 
 Host CFT-CozyCloud
     HostName [COZYCLOUD_PRIVATE_IP]
-    User ubuntu
-    ProxyJump CFT-Bastion
+    User admin
     IdentityFile ~/.ssh/CFT-KeyPair.pem
 ```
 
@@ -167,42 +169,5 @@ sudo systemctl status onlyoffice
 - Mise à jour régulière des AMIs
 - Monitoring des logs de connexion
 - Sauvegarde régulière des données CozyCloud
-
-## Surveillance et Maintenance
-
-### Monitoring
-```bash
-# Vérifier les logs du bastion
-ssh CFT-Bastion "sudo tail -f /var/log/auth.log"
-
-# Vérifier les logs de CozyCloud
-ssh CFT-CozyCloud "sudo cozy-stack status"
-```
-
-### Maintenance
-- Mettre à jour les instances régulièrement
-- Vérifier les certificats SSL
-- Surveiller l'utilisation des ressources
-- Effectuer des sauvegardes régulières
-
-## Résolution des Problèmes
-
-### Problèmes Courants
-1. **Connexion SSH impossible**
-   - Vérifier les Security Groups
-   - Vérifier les permissions des clés
-   - Vérifier la configuration SSH
-
-2. **VPN ne fonctionne pas**
-   - Vérifier la configuration OpenVPN
-   - Vérifier les routes VPC
-   - Vérifier les Security Groups
-
-### Support
-Pour tout problème :
-1. Consulter les logs
-2. Vérifier la configuration
-3. Contacter l'équipe DevOps
-
 ---
 *Documentation maintenue par l'équipe Infrastructure*
