@@ -66,10 +66,12 @@ Ce projet vise à créer une infrastructure AWS sécurisée pour héberger CozyC
 
 ### Variables Requises
 ```hcl
-# terraform.tfvars
+# variable.tf
 key_name      = "CFT-KeyPair"
 bastion_ami   = "ami-08fb0cc3789468f4d"  # Ubuntu 22.04 LTS
 cozycloud_ami = "ami-xxxxx"               # AMI personnalisée avec CozyCloud
+public_vpc_cidr = 10.0.0.0/16
+
 ```
 
 ## Déploiement de l'Infrastructure
