@@ -1,3 +1,4 @@
+# Configuration Terraform et Provider AWS
 terraform {
   required_providers {
     aws = {
@@ -5,7 +6,6 @@ terraform {
       version = "~> 4.16"
     }
   }
-
   required_version = ">= 1.2.0"
 }
 
@@ -13,118 +13,144 @@ provider "aws" {
   region = "eu-west-3"
 }
 
-# Création du premier VPC (public)
+# VPC Public
 resource "aws_vpc" "public_vpc" {
-  cidr_block       = "10.0.0.0/16"
+  cidr_block           = var.public_vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
   tags = {
-    Name = "CFT-Public-VPC"
+    Name = "CFT-public-vpc"
   }
 }
 
-# Création du subnet public dans le VPC public
+# Subnet Public
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.public_vpc.id
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = "eu-west-3a"
   map_public_ip_on_launch = true
+
   tags = {
-    Name = "CFT-Public-Subnet"
+    Name = "CFT-public-subnet"
   }
 }
 
-# Création d'une passerelle internet pour le VPC public
+# Internet Gateway
 resource "aws_internet_gateway" "public_igw" {
   vpc_id = aws_vpc.public_vpc.id
+
   tags = {
-    Name = "CFT-Public-IGW"
+    Name = "CFT-public-igw"
   }
 }
 
-# Création d'une table de routage pour le VPC public
-resource "aws_route_table" "public_route_table" {
+# Table de routage publique
+resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.public_vpc.id
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.public_igw.id
   }
+
   tags = {
-    Name = "CFT-Public-Route-Table"
+    Name = "CFT-public-rt"
   }
 }
 
-# Association de la table de routage au subnet public
-resource "aws_route_table_association" "public_subnet_association" {
+# Association de la table de routage publique
+resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public_subnet.id
-  route_table_id = aws_route_table.public_route_table.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-# Security Group pour l'instance publique
-resource "aws_security_group" "public_sg" {
-  vpc_id = aws_vpc.public_vpc.id
-  name   = "CFT-Public-SG"
+# VPC Privé
+resource "aws_vpc" "private_vpc" {
+  cidr_block           = var.private_vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
-  # Autoriser le trafic SSH depuis n'importe où
+  tags = {
+    Name = "CFT-private-vpc"
+  }
+}
+
+# Subnet Privé
+resource "aws_subnet" "private_subnet" {
+  vpc_id            = aws_vpc.private_vpc.id
+  cidr_block        = var.private_subnet_cidr
+  availability_zone = "eu-west-3a"
+
+  tags = {
+    Name = "CFT-private-subnet"
+  }
+}
+
+# VPC Peering
+resource "aws_vpc_peering_connection" "vpc_peering" {
+  peer_vpc_id = aws_vpc.private_vpc.id
+  vpc_id      = aws_vpc.public_vpc.id
+  auto_accept = true
+
+  tags = {
+    Name = "CFT-vpc-peering"
+  }
+}
+
+# Route pour le peering dans la table publique
+resource "aws_route" "public_to_private" {
+  route_table_id            = aws_route_table.public_rt.id
+  destination_cidr_block    = var.private_vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+}
+
+# Table de routage privée
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.private_vpc.id
+
+  # Route uniquement vers le VPC public via peering
+  route {
+    cidr_block                = var.public_vpc_cidr
+    vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
+  }
+
+  tags = {
+    Name = "CFT-private-rt"
+  }
+}
+
+# Association de la table de routage privée
+resource "aws_route_table_association" "private" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+# Security Group pour le bastion
+resource "aws_security_group" "bastion_sg" {
+  name        = "CFT-bastion-sg"
+  description = "Security group for bastion host with OpenVPN"
+  vpc_id      = aws_vpc.public_vpc.id
+
+  # SSH depuis Internet
   ingress {
+    description = "SSH from anywhere"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Autoriser le trafic sortant illimité
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "CFT-Public-SG"
-  }
-}
-
-# Création de l'instance EC2 dans le subnet public
-resource "aws_instance" "public_instance" {
-  ami           = var.public_ami_id
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.public_subnet.id
-  security_groups = [aws_security_group.public_sg.name]
-  tags = {
-    Name = "CFT-Public-Instance"
-  }
-}
-
-# Création du deuxième VPC (privé)
-resource "aws_vpc" "private_vpc" {
-  cidr_block       = "10.1.0.0/16"
-  tags = {
-    Name = "CFT-Private-VPC"
-  }
-}
-
-# Création du subnet privé dans le VPC privé
-resource "aws_subnet" "private_subnet" {
-  vpc_id     = aws_vpc.private_vpc.id
-  cidr_block = "10.1.1.0/24"
-  tags = {
-    Name = "CFT-Private-Subnet"
-  }
-}
-
-# Security Group pour l'instance privée
-resource "aws_security_group" "private_sg" {
-  vpc_id = aws_vpc.private_vpc.id
-  name   = "CFT-Private-SG"
-
-  # Autoriser le trafic VPN provenant du subnet public
+  # OpenVPN
   ingress {
-    from_port   = 1194  # Port OpenVPN par défaut (modifiable selon la configuration)
+    description = "OpenVPN"
+    from_port   = 1194
     to_port     = 1194
     protocol    = "udp"
-    cidr_blocks = [aws_subnet.public_subnet.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Autoriser le trafic sortant illimité
+  # Trafic sortant autorisé vers Internet
   egress {
     from_port   = 0
     to_port     = 0
@@ -133,37 +159,80 @@ resource "aws_security_group" "private_sg" {
   }
 
   tags = {
-    Name = "CFT-Private-SG"
+    Name = "CFT-bastion-sg"
   }
 }
 
-# Création de l'instance EC2 dans le subnet privé
-resource "aws_instance" "private_instance" {
-  ami           = var.private_ami_id
+# Security Group pour Cozycloud
+resource "aws_security_group" "cozycloud_sg" {
+  name        = "CFT-cozycloud-sg"
+  description = "Security group for Cozycloud instance"
+  vpc_id      = aws_vpc.private_vpc.id
+
+  # HTTP depuis le VPC public uniquement
+  ingress {
+    description = "HTTP from public VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.public_vpc_cidr]
+  }
+
+  # HTTPS depuis le VPC public uniquement
+  ingress {
+    description = "HTTPS from public VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.public_vpc_cidr]
+  }
+
+  # SSH depuis le bastion uniquement
+  ingress {
+    description = "SSH from bastion"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.public_subnet_cidr]
+  }
+
+  # Pas de trafic sortant vers Internet
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.public_vpc_cidr]  # Uniquement vers le VPC public
+  }
+
+  tags = {
+    Name = "CFT-cozycloud-sg"
+  }
+}
+
+# Instance EC2 Bastion
+resource "aws_instance" "bastion" {
+  ami           = var.bastion_ami
   instance_type = "t2.micro"
+  subnet_id     = aws_subnet.public_subnet.id
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
+  tags = {
+    Name = "CFT-bastion-vpn"
+  }
+}
+
+# Instance EC2 Cozycloud
+resource "aws_instance" "cozycloud" {
+  ami           = var.cozycloud_ami
+  instance_type = "t2.medium"
   subnet_id     = aws_subnet.private_subnet.id
-  security_groups = [aws_security_group.private_sg.name]
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.cozycloud_sg.id]
+
   tags = {
-    Name = "CFT-Private-Instance"
+    Name = "CFT-cozycloud"
   }
 }
-
-# Configuration du VPN (simplifié)
-resource "aws_vpn_connection" "vpn" {
-  customer_gateway_id = var.customer_gateway_id
-  type                = "ipsec.1"
-  static_routes_only  = true
-  tags = {
-    Name = "CFT-VPN-Connection"
-  }
-}
-
-# Configuration du VPN (simplifié)
-#resource "aws_vpn_connection" "vpn" {
-#  customer_gateway_id = var.customer_gateway_id
-#  type                = "ipsec.1"
-#  static_routes_only  = true
-#  tags = {
-#    Name = "CFT-VPN-Connection"
-#  }
-#}
