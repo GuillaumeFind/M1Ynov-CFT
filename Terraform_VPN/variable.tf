@@ -1,16 +1,41 @@
-# Variables des IDs des AMIs
-variable "public_ami_id" {
-  description = "ID de l'AMI pour l'instance publique"
+# Variables pour les VPCs
+variable "public_vpc_cidr" {
+  description = "CIDR du VPC public"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "private_vpc_cidr" {
+  description = "CIDR du VPC privé"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
+# Variables pour les Subnets
+variable "public_subnet_cidr" {
+  description = "CIDR du subnet public"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "private_subnet_cidr" {
+  description = "CIDR du subnet privé"
+  type        = string
+  default     = "10.1.1.0/24"
+}
+
+# Variables pour les instances EC2
+variable "key_name" {
+  description = "Nom de la key pair AWS"
   type        = string
 }
 
-variable "private_ami_id" {
-  description = "ID de l'AMI pour l'instance privée"
+variable "bastion_ami" {
+  description = "ID de l'AMI pour le bastion"
   type        = string
 }
 
-# Customer Gateway ID pour le VPN
-#variable "customer_gateway_id" {
-#  description = "ID de la passerelle client pour le VPN"
-#  type        = string
-#}
+variable "cozycloud_ami" {
+  description = "ID de l'AMI pour Cozycloud"
+  type        = string
+}
