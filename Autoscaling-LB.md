@@ -4,11 +4,11 @@
 
 Ce projet consiste à créer une infrastructure AWS avec les caractéristiques suivantes :
 
-1. Un Virtual Private Cloud (VPC).
+1. Deux Virtual Private Cloud (VPC).
 2. Un subnet public et un subnet privé.
 3. Une instance EC2 dans le subnet public (bastion).
 4. Une instance EC2 dans le subnet privé avec CozyCloud installé.
-5. L'accès à l'instance EC2 privée sera uniquement possible via l'instance bastion dans le subnet public.
+5. L'accès à l'instance EC2 privée sera uniquement possible via l'instance bastion dans le subnet public via du peering & VPN
 6. Création d'AMIs pour le bastion et pour l'instance avec CozyCloud, utilisées pour un déploiement automatisé via Terraform.
 
 Toutes les ressources devront être nommées avec le préfixe `CFT-` et seront déployées dans la région `us-west-3`.
