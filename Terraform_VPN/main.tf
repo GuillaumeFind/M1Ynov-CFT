@@ -140,6 +140,14 @@ resource "aws_security_group" "bastion_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+    # DNS depuis Internet
+  ingress {
+    description = "DNS from anywhere"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # OpenVPN
   ingress {
@@ -193,6 +201,15 @@ resource "aws_security_group" "cozycloud_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
+    cidr_blocks = [var.public_subnet_cidr]
+  }
+
+  # DNS depuis le bastion uniquement
+  ingress {
+    description = "DNS from bastion"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
     cidr_blocks = [var.public_subnet_cidr]
   }
 
