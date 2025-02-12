@@ -52,6 +52,9 @@ resource "aws_route_table" "public_rt" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.public_igw.id
+    cidr_block = "10.1.1.0/24"
+    gateway_id = aws_vpc_peering_connection.vpc_peering.id
+
   }
 
   tags = {
@@ -140,13 +143,14 @@ resource "aws_security_group" "bastion_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-    # DNS depuis Internet
+  
+    # PING depuis le bastion uniquement
   ingress {
-    description = "DNS from anywhere"
-    from_port   = 53
-    to_port     = 53
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "PING from bastion"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = [var.public_subnet_cidr]
   }
 
   # OpenVPN
@@ -204,12 +208,12 @@ resource "aws_security_group" "cozycloud_sg" {
     cidr_blocks = [var.public_subnet_cidr]
   }
 
-  # DNS depuis le bastion uniquement
+  # PING depuis le bastion uniquement
   ingress {
-    description = "DNS from bastion"
-    from_port   = 53
-    to_port     = 53
-    protocol    = "udp"
+    description = "PING from bastion"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
     cidr_blocks = [var.public_subnet_cidr]
   }
 
