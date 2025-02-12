@@ -26,7 +26,7 @@ variable "private_subnet_cidr" {
 
 # Variables pour les instances EC2
 variable "key_name" {
-  description = "Nom de la key pair AWS"
+  description = "CTF-KeyPair"
   type        = string
 }
 
