@@ -209,23 +209,29 @@ resource "aws_security_group" "cozycloud_sg" {
   }
 }
 
+# Instance EC2 Bastion
 resource "aws_instance" "bastion" {
-  ami           = "ami-034be14b62a0b12c7"  # AMI ID explicite
+  ami           = var.bastion_ami
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
   key_name      = var.key_name
+
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
   tags = {
     Name = "CFT-bastion-vpn"
   }
 }
 
+# Instance EC2 Cozycloud
 resource "aws_instance" "cozycloud" {
-  ami           = "ami-0f207dc81ec4432ea"  # AMI ID explicite
+  ami           = var.cozycloud_ami
   instance_type = "t2.medium"
   subnet_id     = aws_subnet.private_subnet.id
   key_name      = var.key_name
+
   vpc_security_group_ids = [aws_security_group.cozycloud_sg.id]
+
   tags = {
     Name = "CFT-cozycloud"
   }
