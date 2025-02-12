@@ -43,7 +43,7 @@ On clique sur la zone d'hébergement déja crée par l'autre promo, **tycm2-infr
 
 ![HostedZones](/Images/selectdns.png)
 
-On va devoir créer deux enregistrements : 
+On va devoir créer deux enregistrements interne au VPC, on devra cocher la case *Private Hoste Zone* : 
 
 - une enregistrement qui va lier notre serveur à un nom de domaine, nous avons choisi le nom de domaine : [cft-czycloud.tycm2-infra.fr](https://cft-cozycloud.tycm2-infra.fr/)
 
@@ -55,3 +55,25 @@ Une fois fini, on retrouve nos enregistrements.
 
 
 
+Pour automatiser notre enregistrement de l'instance CozyCloud, il faut ajouter dans le code terraform cette instruction :
+
+````
+resource "aws_route53_record" "example" {
+  zone_id = "Z005299313OXEIIBLI6EB"  # Remplacez par l'ID de votre zone hébergée
+  name    = "cft-cozycloud.tycm2-infra.fr"  # Remplacez par votre nom de domaine
+  type    = "A"
+  ttl     = "300"
+  records = [aws_instance.cozycloud.private_ip]
+}
+````
+Pour ajouter un CNAME, on fait :
+
+```
+
+resource "aws_route53_record" "example_cname_record" {
+  zone_id = "Z005299313OXEIIBLI6EB"  # Remplacez par l'ID de votre zone hébergée
+  name    = "*.cft-cozycloud.tycm2-infra.fr"  # Remplacez par votre sous-domaine
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["cft-cozycloud.tycm2-infra.fr"]  # Remplacez par le domaine cible
+}
