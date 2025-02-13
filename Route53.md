@@ -77,3 +77,40 @@ resource "aws_route53_record" "example_cname_record" {
   ttl     = "300"
   records = ["cft-cozycloud.tycm2-infra.fr"]  # Remplacez par le domaine cible
 }
+````
+
+Au niveau du Peer Connection, il faut mettre les VPC private & public pour qu'ils puissent résoudre les nom de domaines, il faut rajouter les commandes suivantes :
+
+```
+resource "aws_vpc_peering_connection" "vpc_peering" {
+  peer_vpc_id = aws_vpc.private_vpc.id
+  vpc_id      = aws_vpc.public_vpc.id
+  auto_accept = true
+
+  accepter {
+    allow_remote_vpc_dns_resolution = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution = true
+  }
+  }
+  ```
+
+  Pour appliquer le DNS private, tycm2-infra.fr, au VPC sur le route 53, il faut ajouter ces valeurs : 
+
+```
+  # Ajustement des VPC associée à la zone
+
+resource "aws_route53_zone" "private" {
+  name = "tycm2-infra.fr"
+
+  vpc {
+    vpc_id = aws_vpc.private_vpc.id
+  }
+
+  vpc {
+    vpc_id = aws_vpc.public_vpc.id
+  }
+}
+```
