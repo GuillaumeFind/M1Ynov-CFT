@@ -139,18 +139,17 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-# Ajustement des VPC associée à la zone
-resource "aws_route53_zone" "private" {
+# Associer les VPC à la zone DNS existante
+resource "aws_route53_zone_association" "private_vpc_association" {
   zone_id = "Z005299313OXEIIBLI6EB"
-
-  vpc {
-    vpc_id = aws_vpc.private_vpc.id
-  }
-
-  vpc {
-    vpc_id = aws_vpc.public_vpc.id
-  }
+  vpc_id  = aws_vpc.private_vpc.id
 }
+
+resource "aws_route53_zone_association" "public_vpc_association" {
+  zone_id = "Z005299313OXEIIBLI6EB"
+  vpc_id  = aws_vpc.public_vpc.id
+}
+
 
 # Enregistrements Route 53
 resource "aws_route53_record" "example" {
