@@ -249,10 +249,10 @@ resource "aws_security_group" "cozycloud_sg" {
 
 # Instance EC2 Bastion
 resource "aws_instance" "bastion" {
-  ami           = [var.bastion_ami]
+  ami           = var.bastion_ami
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
-  key_name      = [var.key_name]
+  key_name      = var.key_name
 
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
@@ -263,10 +263,10 @@ resource "aws_instance" "bastion" {
 
 # Instance EC2 Cozycloud
 resource "aws_instance" "cozycloud" {
-  ami           = [var.cozycloud_ami]
+  ami           = var.cozycloud_ami
   instance_type = "t2.medium"
   subnet_id     = aws_subnet.private_subnet.id
-  key_name      = [var.key_name]
+  key_name      = var.key_name
 
   vpc_security_group_ids = [aws_security_group.cozycloud_sg.id]
 
