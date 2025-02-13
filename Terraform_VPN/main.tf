@@ -167,7 +167,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = [var.public_subnet_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # OpenVPN
@@ -231,7 +231,7 @@ resource "aws_security_group" "cozycloud_sg" {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = [var.public_subnet_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Pas de trafic sortant vers Internet
