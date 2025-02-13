@@ -272,7 +272,7 @@ resource "aws_security_group" "cozycloud_sg" {
 
 # Instance EC2 Bastion
 resource "aws_instance" "bastion" {
-  ami           = "ami-034be14b62a0b12c7"
+  ami           = var.bastion_ami
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public_subnet.id
   key_name      = var.key_name
