@@ -97,7 +97,7 @@ resource "aws_vpc_peering_connection" "vpc_peering" {
   }
   ```
 
-  Pour appliquer le DNS private, tycm2-infra.fr, au VPC sur le route 53, il faut ajouter ces valeurs : 
+  Pour créer une zone DNS private, tycm2-infra.fr, au VPC sur le route 53, il faut ajouter ces valeurs : 
 
 ```
   # Ajustement des VPC associée à la zone
