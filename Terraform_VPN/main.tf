@@ -129,6 +129,23 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private_rt.id
 }
 
+# Enregistrements Route 53
+resource "aws_route53_record" "example" {
+  zone_id = "Z005299313OXEIIBLI6EB"
+  name    = "cft-cozycloud.tycm2-infra.fr"
+  type    = "A"
+  ttl     = "300"
+  records = [aws_instance.cozycloud.private_ip]
+}
+
+resource "aws_route53_record" "example_cname_record" {
+  zone_id = "Z005299313OXEIIBLI6EB"
+  name    = "*.cft-cozycloud.tycm2-infra.fr"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["cft-cozycloud.tycm2-infra.fr"]
+}
+
 # Security Group pour le bastion
 resource "aws_security_group" "bastion_sg" {
   name        = "CFT-bastion-sg"
