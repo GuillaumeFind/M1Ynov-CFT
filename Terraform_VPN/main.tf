@@ -141,7 +141,7 @@ resource "aws_route_table_association" "private" {
 
 # Ajustement des VPC associée à la zone
 resource "aws_route53_zone" "private" {
-  name = "tycm2-infra.fr"
+  zone_id = "Z005299313OXEIIBLI6EB"
 
   vpc {
     vpc_id = aws_vpc.private_vpc.id
