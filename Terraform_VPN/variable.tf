@@ -34,7 +34,7 @@ variable "key_name" {
 #variable "bastion_ami" {
 #  description = "ID de l'AMI pour le bastion"
 #  type        = string
-#  default     = "ami-034be14b62a0b12c7"
+#  default     = "ami-0b8f5a447f628c081"
 #}
 
 variable "cozycloud_ami" {
