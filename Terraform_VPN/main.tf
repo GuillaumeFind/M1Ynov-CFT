@@ -140,28 +140,29 @@ resource "aws_route_table_association" "private" {
 }
 
 # Associer les VPC à la zone DNS existante
-resource "aws_route53_zone_association" "private_vpc_association" {
-  zone_id = "Z005299313OXEIIBLI6EB"
-  vpc_id  = aws_vpc.private_vpc.id
-}
+resource "aws_route53_zone" "private" {
+  name = "tycm2-infra.fr"
 
-resource "aws_route53_zone_association" "public_vpc_association" {
-  zone_id = "Z005299313OXEIIBLI6EB"
-  vpc_id  = aws_vpc.public_vpc.id
-}
+    vpc {
+    vpc_id = aws_vpc.private_vpc.id
+  }
 
+      vpc {
+    vpc_id = aws_vpc.public_vpc.id
+  }
+}
 
 # Enregistrements Route 53
-resource "aws_route53_record" "example" {
-  zone_id = "Z005299313OXEIIBLI6EB"
+resource "aws_route53_record" "cozy_A" {
+  zone_id = aws_route53_zone.private.zone_id
   name    = "cft-cozycloud.tycm2-infra.fr"
   type    = "A"
   ttl     = "300"
   records = [aws_instance.cozycloud.private_ip]
 }
 
-resource "aws_route53_record" "example_cname_record" {
-  zone_id = "Z005299313OXEIIBLI6EB"
+resource "aws_route53_record" "cozy_cname" {
+  zone_id = aws_route53_zone.private.zone_id
   name    = "*.cft-cozycloud.tycm2-infra.fr"
   type    = "CNAME"
   ttl     = "300"
