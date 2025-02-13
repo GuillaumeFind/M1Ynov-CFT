@@ -29,3 +29,10 @@ Pour mener à bien le projet, nous avons décidé de procéder par étapes :
 Nous utilisons Terraform pour créer l'infrastructure supportant CozyCloud.
 
 **Chaque ressource créée par le groupe sera précédée du trigramme "CFT"**.
+
+
+Problèmes rencontrés : 
+
+- Deploiement configuration du DNS ( ajout d'un autre hosted zone et association au VPC)
+- git pull pour le terraform
+- a compléter
