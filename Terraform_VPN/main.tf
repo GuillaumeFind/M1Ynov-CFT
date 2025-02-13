@@ -139,7 +139,7 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-# Associer les VPC à la zone DNS existante
+# Création de Zone DNS private
 resource "aws_route53_zone" "private" {
   name = "tycm2-infra.fr"
 
@@ -147,7 +147,7 @@ resource "aws_route53_zone" "private" {
     vpc_id = aws_vpc.private_vpc.id
   }
 
-      vpc {
+    vpc {
     vpc_id = aws_vpc.public_vpc.id
   }
 }
