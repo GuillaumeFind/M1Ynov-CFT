@@ -105,7 +105,7 @@ resource "aws_vpc_peering_connection" "vpc_peering" {
   requester {
     allow_remote_vpc_dns_resolution = true
   }
-  
+
   tags = {
     Name = "CFT-vpc-peering"
   }
@@ -137,6 +137,19 @@ resource "aws_route_table" "private_rt" {
 resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private_subnet.id
   route_table_id = aws_route_table.private_rt.id
+}
+
+# Ajustement des VPC associée à la zone
+resource "aws_route53_zone" "private" {
+  name = "tycm2-infra.fr"
+
+  vpc {
+    vpc_id = aws_vpc.private_vpc.id
+  }
+
+  vpc {
+    vpc_id = aws_vpc.public_vpc.id
+  }
 }
 
 # Enregistrements Route 53
