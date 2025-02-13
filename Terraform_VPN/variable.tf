@@ -28,6 +28,7 @@ variable "private_subnet_cidr" {
 variable "key_name" {
   description = "CTF-KeyPair"
   type        = string
+  default     = "CTF-KeyPair"
 }
 
 variable "bastion_ami" {
