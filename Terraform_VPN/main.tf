@@ -52,11 +52,13 @@ resource "aws_route_table" "public_rt" {
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.public_igw.id
-    cidr_block = "10.1.1.0/24"
-    gateway_id = aws_vpc_peering_connection.vpc_peering.id
-
   }
 
+route {
+    cidr_block = "10.1.1.0/24"
+    gateway_id = aws_vpc_peering_connection.vpc_peering.id
+  }
+  
   tags = {
     Name = "CFT-public-rt"
   }
